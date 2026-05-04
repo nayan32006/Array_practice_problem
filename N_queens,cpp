@@ -1,0 +1,80 @@
+#include <iostream>
+#include <vector>
+#include <string>
+
+using namespace std;
+
+class Solution {
+public:
+    vector<vector<string>> solveNQueens(int n) {
+        vector<vector<string>> ret;
+        // खाली बोर्ड तैयार करना ('.' के साथ)
+        string str(n, '.');
+        vector<string> board(n, str);
+        
+        backtrack(n, ret, board, 0);
+        return ret;
+    }
+
+private:
+    void backtrack(int n, vector<vector<string>>& ret, vector<string>& board, int row) {
+        // Base Case: अगर सारी रानियाँ बैठ गई हैं
+        if (row == n) {
+            ret.push_back(board);
+            return;
+        }
+
+        for (int col = 0; col < n; col++) {
+            if (isSafe(board, row, col, n)) {
+                // रानी को बिठाओ (Place Queen)
+                board[row][col] = 'Q';
+                
+                // अगली पंक्ति पर जाओ (Explore next row)
+                backtrack(n, ret, board, row + 1);
+                
+                // वापस आते समय रानी हटाओ (Backtrack)
+                board[row][col] = '.';
+            }
+        }
+    }
+
+    bool isSafe(vector<string>& board, int row, int col, int n) {
+        // 1. कॉलम चेक: क्या ऊपर उसी कॉलम में रानी है?
+        for (int i = 0; i < row; i++) {
+            if (board[i][col] == 'Q') return false;
+        }
+
+        // 2. बायां तिरछा (Upper-Left Diagonal) चेक
+        int r = row, c = col;
+        while (--r >= 0 && --c >= 0) {
+            if (board[r][c] == 'Q') return false;
+        }
+
+        // 3. दायां तिरछा (Upper-Right Diagonal) चेक
+        r = row; c = col;
+        while (--r >= 0 && ++c < n) {
+            if (board[r][c] == 'Q') return false;
+        }
+
+        return true;
+    }
+};
+
+// VS Code में रन करने के लिए Main function
+int main() {
+    Solution sol;
+    int n = 4; // आप यहाँ n की वैल्यू बदल सकते हैं
+    vector<vector<string>> results = sol.solveNQueens(n);
+
+    cout << n << "-Queens के कुल हल: " << results.size() << endl << endl;
+
+    for (int i = 0; i < results.size(); i++) {
+        cout << "Solution " << i + 1 << ":" << endl;
+        for (string row : results[i]) {
+            cout << row << endl;
+        }
+        cout << endl;
+    }
+
+    return 0;
+}
